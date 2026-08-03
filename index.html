@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#020617">
+  <title>갤럭시 슈팅</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 셋업 화면 -->
+    <section id="setup" class="screen">
+      <div class="setup-bg"></div>
+      <div class="setup-panel">
+        <p class="brand">GALAXY STRIKE</p>
+        <h1>갤럭시 슈팅</h1>
+        <p class="tagline">바로 시작하거나, 사진으로 기체를 바꿔 보세요</p>
+
+        <div class="upload-grid">
+          <label class="upload-card" for="player-upload">
+            <input type="file" id="player-upload" accept="image/*" hidden>
+            <div class="upload-preview" id="player-preview">
+              <span class="upload-placeholder">+</span>
+            </div>
+            <div class="upload-meta">
+              <strong>내 우주선</strong>
+              <span>선택 · 기본 기체 사용 가능</span>
+            </div>
+          </label>
+
+          <label class="upload-card" for="enemy-upload">
+            <input type="file" id="enemy-upload" accept="image/*" hidden>
+            <div class="upload-preview" id="enemy-preview">
+              <span class="upload-placeholder">+</span>
+            </div>
+            <div class="upload-meta">
+              <strong>보스 / 아이템 적</strong>
+              <span>선택 · 기본 기체 사용 가능</span>
+            </div>
+          </label>
+        </div>
+
+        <p class="hint">사진은 선택 사항입니다. 안 올리면 기본 기체로 플레이합니다. 올리면 내 우주선·보스/아이템 적에 사용됩니다.</p>
+
+        <div class="controls-guide">
+          <div>
+            <em>모바일</em>
+            <span>기체 드래그 · 탭으로 발사</span>
+          </div>
+          <div>
+            <em>PC</em>
+            <span>←→↑↓ 이동 · Space 발사</span>
+          </div>
+        </div>
+
+        <button id="btn-start" class="btn-primary">게임 시작</button>
+      </div>
+    </section>
+
+    <!-- 게임 화면 -->
+    <section id="game" class="screen hidden">
+      <canvas id="canvas"></canvas>
+      <div id="hud">
+        <div class="hud-left">
+          <span>SCORE <b id="score">0</b></span>
+          <span>WAVE <b id="wave">1</b></span>
+        </div>
+        <div class="hud-right">
+          <span id="lives">❤ ❤ ❤</span>
+        </div>
+      </div>
+      <div id="toast" class="hidden"></div>
+    </section>
+
+    <!-- 오버레이 -->
+    <section id="overlay" class="screen hidden">
+      <div class="overlay-panel">
+        <h2 id="overlay-title">GAME OVER</h2>
+        <p id="overlay-score">점수 0</p>
+        <div class="overlay-actions">
+          <button id="btn-retry" class="btn-primary">다시 하기</button>
+          <button id="btn-setup" class="btn-ghost">사진 바꾸기</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="./game.js"></script>
+</body>
+</html>
