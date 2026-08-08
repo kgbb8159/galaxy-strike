@@ -62,8 +62,8 @@
 
   const PLAYER_W = 56;
   const PLAYER_H = 56;
-  const FIRE_BASE = 0.22;
-  const FIRE_RAPID = 0.1;
+  const FIRE_BASE = 0.15;
+  const FIRE_RAPID = 0.08;
 
   /* ---------- Asset helpers ---------- */
   function loadImageFile(file) {
@@ -355,9 +355,9 @@
   /* ---------- Entities ---------- */
   function resetGame() {
     state.score = 0;
-    state.lives = 3;
+    state.lives = 5;
     state.wave = 1;
-    state.invuln = 1.5;
+    state.invuln = 2.2;
     state.fireCd = 0;
     state.bullets = [];
     state.enemyBullets = [];
@@ -386,15 +386,15 @@
   function spawnWave(wave) {
     state.enemies = [];
     state.bossAlive = false;
-    const cols = Math.min(8, 4 + Math.floor(wave / 2));
-    const rows = Math.min(5, 2 + Math.floor((wave - 1) / 2));
-    const gapX = Math.min(70, (W - 80) / cols);
+    const cols = Math.min(7, 3 + Math.floor(wave / 2));
+    const rows = Math.min(4, 1 + Math.floor((wave - 1) / 2));
+    const gapX = Math.min(78, (W - 80) / cols);
     const startX = (W - (cols - 1) * gapX) / 2;
-    const startY = 70;
+    const startY = 78;
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        const isSpecial = Math.random() < Math.min(0.18, 0.08 + wave * 0.01);
+        const isSpecial = Math.random() < Math.min(0.22, 0.12 + wave * 0.01);
         const type = isSpecial ? "special" : "normal";
         const sprite =
           type === "special"
@@ -404,16 +404,16 @@
           type,
           sprite,
           x: startX + c * gapX,
-          y: startY + r * 52,
+          y: startY + r * 56,
           homeX: startX + c * gapX,
-          homeY: startY + r * 52,
+          homeY: startY + r * 56,
           w: type === "special" ? 48 : 40,
           h: type === "special" ? 48 : 40,
-          hp: type === "special" ? 2 + Math.floor(wave / 3) : 1,
+          hp: type === "special" ? 1 + Math.floor(wave / 4) : 1,
           score: type === "special" ? 200 : 50 + r * 20,
           phase: rand(0, Math.PI * 2),
           dive: null,
-          shootCd: rand(1.5, 4),
+          shootCd: rand(2.8, 5.5),
           bob: rand(0, Math.PI * 2),
         });
       }
@@ -431,12 +431,12 @@
         homeY: 90,
         w: 96,
         h: 96,
-        hp: 18 + wave * 4,
-        maxHp: 18 + wave * 4,
+        hp: 12 + wave * 2,
+        maxHp: 12 + wave * 2,
         score: 1000 + wave * 200,
         phase: 0,
         dive: null,
-        shootCd: 0.8,
+        shootCd: 1.4,
         bob: 0,
         pattern: 0,
       });
@@ -513,9 +513,9 @@
       return;
     }
     state.lives -= 1;
-    state.invuln = 2;
-    state.power.multi = 0;
-    state.power.rapid = 0;
+    state.invuln = 2.8;
+    state.power.multi = Math.max(0, state.power.multi * 0.5);
+    state.power.rapid = Math.max(0, state.power.rapid * 0.5);
     spawnParticles(state.player.x, state.player.y, "#fb7185", 20);
     updateHud();
     if (state.lives <= 0) {
@@ -642,7 +642,7 @@
     // player keyboard
     const p = state.player;
     if (p && !state.dragging) {
-      const speed = 340;
+      const speed = 400;
       if (keys.has("ArrowLeft") || keys.has("a") || keys.has("A")) p.x -= speed * dt;
       if (keys.has("ArrowRight") || keys.has("d") || keys.has("D")) p.x += speed * dt;
       if (keys.has("ArrowUp") || keys.has("w") || keys.has("W")) p.y -= speed * dt;
@@ -686,16 +686,16 @@
         e.y = 90 + Math.sin(e.phase * 1.4) * 18;
         e.shootCd -= dt;
         if (e.shootCd <= 0) {
-          e.shootCd = Math.max(0.45, 0.9 - state.wave * 0.03);
+          e.shootCd = Math.max(0.9, 1.5 - state.wave * 0.02);
           e.pattern = (e.pattern + 1) % 3;
-          const count = e.pattern === 0 ? 5 : e.pattern === 1 ? 3 : 7;
+          const count = e.pattern === 0 ? 3 : e.pattern === 1 ? 2 : 4;
           for (let i = 0; i < count; i++) {
-            const ang = Math.PI / 2 + (i - (count - 1) / 2) * 0.28;
+            const ang = Math.PI / 2 + (i - (count - 1) / 2) * 0.22;
             state.enemyBullets.push({
               x: e.x,
               y: e.y + e.h / 3,
-              vx: Math.cos(ang) * 180,
-              vy: Math.sin(ang) * 220,
+              vx: Math.cos(ang) * 120,
+              vy: Math.sin(ang) * 150,
               r: 5,
             });
           }
@@ -708,19 +708,19 @@
         e.y = e.homeY + Math.sin(e.bob * 0.8) * 6;
 
         // chance to dive
-        if (Math.random() < dt * (0.08 + state.wave * 0.01) && aliveNormals.length) {
+        if (Math.random() < dt * (0.035 + state.wave * 0.005) && aliveNormals.length) {
           e.dive = {
             t: 0,
             sx: e.x,
             sy: e.y,
-            tx: p ? p.x + rand(-40, 40) : W / 2,
+            tx: p ? p.x + rand(-60, 60) : W / 2,
           };
         }
       } else {
         e.dive.t += dt;
         const t = e.dive.t;
-        e.x = e.dive.sx + Math.sin(t * 3) * 80 + (e.dive.tx - e.dive.sx) * Math.min(1, t / 2.2);
-        e.y = e.dive.sy + t * 140;
+        e.x = e.dive.sx + Math.sin(t * 2.4) * 60 + (e.dive.tx - e.dive.sx) * Math.min(1, t / 2.6);
+        e.y = e.dive.sy + t * 100;
         if (e.y > H + 40) {
           e.x = e.homeX;
           e.y = e.homeY;
@@ -729,17 +729,17 @@
       }
 
       e.shootCd -= dt;
-      if (e.shootCd <= 0 && Math.random() < 0.35) {
-        e.shootCd = rand(2.2, 4.5);
+      if (e.shootCd <= 0 && Math.random() < 0.22) {
+        e.shootCd = rand(3.2, 5.8);
         state.enemyBullets.push({
           x: e.x,
           y: e.y + e.h / 2,
           vx: 0,
-          vy: 180 + state.wave * 8,
+          vy: 120 + state.wave * 5,
           r: 3.5,
         });
       } else if (e.shootCd <= 0) {
-        e.shootCd = rand(1.2, 2.5);
+        e.shootCd = rand(2.0, 3.8);
       }
     }
 
@@ -775,14 +775,14 @@
     if (p) {
       for (let i = state.enemyBullets.length - 1; i >= 0; i--) {
         const b = state.enemyBullets[i];
-        if (Math.abs(b.x - p.x) < p.w * 0.32 && Math.abs(b.y - p.y) < p.h * 0.32) {
+        if (Math.abs(b.x - p.x) < p.w * 0.24 && Math.abs(b.y - p.y) < p.h * 0.24) {
           state.enemyBullets.splice(i, 1);
           hurtPlayer();
         }
       }
       // enemy body collision
       for (const e of state.enemies) {
-        if (Math.abs(e.x - p.x) < (e.w + p.w) * 0.28 && Math.abs(e.y - p.y) < (e.h + p.h) * 0.28) {
+        if (Math.abs(e.x - p.x) < (e.w + p.w) * 0.22 && Math.abs(e.y - p.y) < (e.h + p.h) * 0.22) {
           hurtPlayer();
         }
       }
@@ -835,7 +835,7 @@
       state.power.shield = 1;
       showToast("실드");
     } else if (kind === "life") {
-      state.lives = Math.min(5, state.lives + 1);
+      state.lives = Math.min(7, state.lives + 1);
       updateHud();
       showToast("추가 생명");
     }
